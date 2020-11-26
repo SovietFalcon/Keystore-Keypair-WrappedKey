@@ -7,11 +7,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-
-        ExerciciFitxer.exercici1();
-
-        /*
-
         Scanner scanner = new Scanner(System.in);
 
 
@@ -31,11 +26,6 @@ public class Main {
             case 4:
                 ExerciciFitxer.exercici1();
         }
-
-         */
-
-
-
 
     }
 }
