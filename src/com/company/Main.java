@@ -9,7 +9,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
 
-        System.out.println("Exercicis:\n1. 1.1.\n2. 1.2.\n3. 1.3.\n4. 2.1.\n5. 2.2.\n6. 2.3\n7. 2.4\n8. 2.5");
+        System.out.println("Exercicis:\n1. 1.1.\n2. 1.2.\n3. 1.3.\n4. 2.1.\n5. 2.2.\n6. 2.3.\n7. 2.5 i 2.6.\n8. 2.6.");
         int menu = scanner.nextInt();
 
         switch(menu) {
@@ -32,7 +32,7 @@ public class Main {
                 HacerCosas.exercici23();
                 break;
             case 7:
-                HacerCosas.exercici13();
+                HacerCosas.exercici25();
                 break;
         }
 

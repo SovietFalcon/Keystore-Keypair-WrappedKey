@@ -3,9 +3,12 @@ package com.company;
 import javax.crypto.SecretKey;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyStore;
+import java.security.PublicKey;
+import java.security.cert.CertPath;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.Scanner;
@@ -128,15 +131,35 @@ public class HacerCosas {
     //Exercici 2.3
     public static void exercici23() throws Exception {
 
-        FileInputStream file = new FileInputStream("C:\\Users\\I\\Desktop\\jordi.cer");
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        System.out.println(Xifrar.getPublicKey("C:\\Users\\I\\Desktop\\jordi.cer"));
+
+    }
+
+    //Exercicis 2.5 i 2.6
+    public static void exercici25() throws Exception {
+
+        String text = "prova de text";
+        byte[] textenbytes = text.getBytes();
+
+        KeyPair key = Xifrar.randomGenerate(1024);
+
+        byte[] textxifratenbytes = Xifrar.encryptData(textenbytes,key.getPublic());
+
+        byte[] signature = Xifrar.signData(textenbytes, key.getPrivate());
+
+        String signatureString = new String(signature, "UTF-8");
+        System.out.println("Signatura:");
+        System.out.println(signatureString);
+
+        System.out.print("Valida? : ");
+        System.out.println(Xifrar.validateSignature(textenbytes,signature,key.getPublic()));
 
 
 
     }
 
-    //Exercici 2.4
-    public static void exercici24() throws Exception {
+    //Exercici Clau embolcallada 1
+    public static void exercici31() throws Exception {
 
 
 

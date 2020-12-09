@@ -6,8 +6,12 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.*;
+import java.security.cert.CertPath;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
 public class Xifrar {
@@ -89,9 +93,70 @@ public class Xifrar {
         return ks;
     }
 
+    //Exercici 2.3
+    public static PublicKey getPublicKey(String fitxer) throws Exception {
+
+        FileInputStream certificateInputStream = new FileInputStream(fitxer);
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+        Certificate certificate = cf.generateCertificate(certificateInputStream);
+
+        PublicKey pKey = certificate.getPublicKey();
+
+        return pKey;
+    }
 
 
+    //Exercici 2.5
+    public static byte[] signData(byte[] data, PrivateKey priv) {
+        byte[] signature = null;
+
+        try {
+            Signature signer = Signature.getInstance("SHA1withRSA");
+            signer.initSign(priv);
+            signer.update(data);
+            signature = signer.sign();
+        } catch (Exception ex) {
+            System.err.println("Error signant les dades: " + ex);
+        }
+        return signature;
+    }
+
+    //Exercici 2.6
+    public static boolean validateSignature(byte[] data, byte[] signature, PublicKey pub) {
+        boolean isValid = false;
+        try {
+            Signature signer = Signature.getInstance("SHA1withRSA");
+            signer.initVerify(pub);
+            signer.update(data);
+            isValid = signer.verify(signature);
+        } catch (Exception ex) {
+            System.err.println("Error validant les dades: " + ex);
+        }
+        return isValid;
+    }
 
 
+    public byte[][] encryptWrappedData(byte[] data, PublicKey pub) {
+        byte[][] encWrappedData = new byte[2][];
+        try {
+            KeyGenerator kgen = KeyGenerator.getInstance("AES");
+            kgen.init(128);
+            SecretKey sKey = kgen.generateKey();
+
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, sKey);
+            byte[] encMsg = cipher.doFinal(data);
+
+            cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.WRAP_MODE, pub);
+            byte[] encKey = cipher.wrap(sKey);
+            encWrappedData[0] = encMsg;
+            encWrappedData[1] = encKey;
+        } catch (Exception  ex) {
+            System.err.println("Ha succeït un error xifrant: " + ex);
+        }
+        return encWrappedData;
+    }
 
 }
