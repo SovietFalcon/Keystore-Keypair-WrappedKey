@@ -1,97 +1,143 @@
 package com.company;
 
 import javax.crypto.SecretKey;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.util.Scanner;
 
 public class HacerCosas {
 
-    //Exercici 5
-    public static void exercici5() {
+    //Exercici 1.1
+    public static void exercici11() throws Exception {
 
-        //La generació de la clau en base al mètode
-        SecretKey key = Xifrar.keygenKeyGeneration(256);
+        String text = "Aquest és un missatge d'exemple !";
+        System.out.println("Missatge en qüestió: " + text + "\n");
+        byte[] textenbytes = text.getBytes();
 
-        String texto = "la criptografia esta guai"; //text en clar
-        System.out.println("Text sense compilar: " + texto);
+        //Generem el parell de claus
+        KeyPair key = Xifrar.randomGenerate(1024);
 
-        //Passem el text en clar a un array de bytes, i ho mostrem
-        byte[] textoEnBytes = texto.getBytes();
-        //System.out.println(textoEnBytes);
+        //Xifrem el missatge i el xifrem amb la clau pública
+        byte[] textxifratenbytes = Xifrar.encryptData(textenbytes,key.getPublic());
+        String textxifrat = new String(textxifratenbytes,"UTF-8");
 
-        //;
+        System.out.println("Missatge xifrat: ");
+        System.out.println(textxifrat);
+        System.out.println();
 
-        //Fem servir el mètode encryptData i la passem a String
-        byte[] textoCompiladoenBytes = Xifrar.encryptData(key, textoEnBytes);
-        String textoCompilado = new String(textoCompiladoenBytes, StandardCharsets.UTF_8);
+        //Desxifrem el missatge amb la clau privada
+        byte[] textdesxifratenbytes = Xifrar.decryptData(key.getPrivate(),textxifratenbytes);
 
-        //Veiem que està compilat i no s'entén
-        System.out.println("Text compilat: " + textoCompilado);
+        String textdesxifrat = new String(textdesxifratenbytes,"UTF-8");
 
-        //Fem servir el mètode decryptData per desxifrar i ho passem a String també
-        byte[] textoDescompiladoenBytes = Xifrar.decryptData(key, textoCompiladoenBytes);
-        String textoDescompilado = new String (textoDescompiladoenBytes, StandardCharsets.UTF_8);
-
-        System.out.println("Text descompilat: " + textoDescompilado);
+        System.out.println("Missatge desxifrat: " + textdesxifrat);
 
     }
 
-    //Exercicis 6 i 8
-    public static void exercici6() {
+    //Exercici 1.2
+    public static void exercici12() throws Exception{
+
+        //Generem el parell de claus
+        KeyPair key = Xifrar.randomGenerate(1024);
 
         Scanner scanner = new Scanner(System.in);
 
-        //Generem la key amb el mètode i fiquem "icampos", el meu nom, com a contrasenya
-        SecretKey key = Xifrar.passwordKeyGeneration("icampos", 256);
+        //Demanem el missatge
+        System.out.println("Escriu el missatge que vols xifrar:");
+        String missatge = scanner.nextLine();
+        byte[] missatgeenbytes = missatge.getBytes();
 
-        String texto = "Exemple de text";
+        //Xifrem el missatge i el xifrem amb la clau pública
+        byte[] missatgexifratenbytes = Xifrar.encryptData(missatgeenbytes,key.getPublic());
+        String textxifrat = new String(missatgexifratenbytes,"UTF-8");
 
-        System.out.println("Text sense compilar: " + texto);
+        System.out.println("Missatge xifrat: ");
+        System.out.println(textxifrat);
+        System.out.println();
 
-        //Passem el text en clar a un array de bytes, i ho mostrem
-        byte[] textoEnBytes = texto.getBytes();
-        //System.out.println(textoEnBytes);
+        //Desxifrem el missatge amb la clau privada
+        byte[] missatgedesxifratenbytes = Xifrar.decryptData(key.getPrivate(),missatgexifratenbytes);
 
-        //;
+        String textdesxifrat = new String(missatgedesxifratenbytes,"UTF-8");
 
-        //Fem servir el mètode encryptData i la passem a String
-        byte[] textoCompiladoenBytes = Xifrar.encryptData(key, textoEnBytes);
-        String textoCompilado = new String(textoCompiladoenBytes, StandardCharsets.UTF_8);
+        System.out.println("Missatge desxifrat: " + textdesxifrat);
 
-        //Veiem que està compilat i no s'entén
-        System.out.println("Text compilat: " + textoCompilado);
-
-
-        //Li diem a l'usuari que faci servir una contrasenya. Si és correcta, funcionarà. Si no, no.
-        //I sortirà un error.
-
-        System.out.print("Password: ");
-        SecretKey clavepalabra = Xifrar.passwordKeyGeneration(scanner.nextLine(), 256);
-
-
-        try {
-            byte[] textoDescompiladoenBytes = Xifrar.decryptData(clavepalabra, textoCompiladoenBytes);
-            String textoDescompilado = new String(textoDescompiladoenBytes, StandardCharsets.UTF_8);
-
-            System.out.println("Text descompilat: " + textoDescompilado);
-        } catch (Exception e) {
-            //System.out.println("Contrasenya incorrecta!");
-        }
 
     }
 
-    //Exercici 7
-    public static void exercici7() throws Exception {
+    //Exercici 1.3
+    public static void exercici13() throws Exception {
 
-        SecretKey key = Xifrar.passwordKeyGeneration("prova exercici 7", 256);
+        KeyPair key = Xifrar.randomGenerate(1024);
 
-        System.out.println("toString: " + key.toString());
-        System.out.println("Aconseguir tipus d'algoritme (.getAlgorithm): " + key.getAlgorithm());
-        System.out.println("Aconseguir el tipus de format (.getFormat) : " + key.getFormat());
-        System.out.println("La clau ha sigut destruïda? : " + key.isDestroyed());
+        System.out.println("---- Clau pública ----");
+        System.out.println(key.getPublic());
+        System.out.println();
+        System.out.println("-- getAlgorithm --");
+        System.out.println(key.getPublic().getAlgorithm());
+        System.out.println();
+        System.out.println("-- getEncoded --");
+        System.out.println(key.getPublic().getEncoded());
+        System.out.println();
+        System.out.println("---- Clau privada ----");
+        System.out.println(key.getPrivate());
+        System.out.println();
+        System.out.println("-- getFormat --");
+        System.out.println(key.getPrivate().getFormat());
 
-        //Aquest .equals s'utilitza per veure si dues claus són iguals
-        System.out.println("Aquesta key és igual a si mateixa (key.equals(key)) ? : " + key.equals(key));
+    }
+
+    //Exercici 2.1
+    public static void exercici21() throws Exception {
+
+        KeyStore keystore = Xifrar.loadKeyStore("C:\\Users\\I\\Desktop\\keystore.ks","usuari");
+
+        System.out.println("-- Tipus de Keystore: " + keystore.getType());
+        System.out.println("-- Mida del magatzem: " + keystore.size() + " clau/s.");
+        System.out.println("-- Àlies de les claus:");
+        System.out.println(keystore.aliases().asIterator().next());
+        System.out.println();
+        System.out.println("-- Certificat d'una de les claus: " + keystore.getCertificate(keystore.aliases().nextElement()));
+        System.out.println();
+        System.out.println("-- Algorisme de xifrat: " + keystore.getKey("lamevaclaum9","usuari".toCharArray()).getAlgorithm());
+
+    }
+
+    //Exercici 2.2
+    public static void exercici22() throws Exception {
+
+        KeyStore keystore = Xifrar.loadKeyStore("C:\\Users\\I\\Desktop\\keystore.ks","usuari");
+
+        SecretKey key = Xifrar.keygenKeyGeneration(256);
+
+        KeyStore.ProtectionParameter protParam = new KeyStore.PasswordProtection("usuari".toCharArray());
+        KeyStore.SecretKeyEntry skEntry = new KeyStore.SecretKeyEntry(key);
+
+        keystore.setEntry("clauexercici",skEntry,protParam);
+        FileOutputStream fOutput = new FileOutputStream("C:\\Users\\I\\Desktop\\keystore.ks");
+        keystore.store(fOutput,"usuari".toCharArray());
+        fOutput.close();
+
+    }
+
+    //Exercici 2.3
+    public static void exercici23() throws Exception {
+
+        FileInputStream file = new FileInputStream("C:\\Users\\I\\Desktop\\jordi.cer");
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+
+
+    }
+
+    //Exercici 2.4
+    public static void exercici24() throws Exception {
+
 
 
     }
